@@ -1,7 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cipherschool_expense_tracking_app/Screens/Home.dart';
+import 'package:cipherschool_expense_tracking_app/Screens/signup_page.dart';
 
 class Getting_started extends StatelessWidget {
   const Getting_started({super.key});
+
+  // Method to handle navigation based on authentication status
+  void _navigateToNextScreen(BuildContext context) async {
+    // Check current authentication state
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      // User is already logged in, navigate to Home screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      // No user logged in, navigate to SignUp page
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => SignUpScreen()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,15 +75,18 @@ class Getting_started extends StatelessWidget {
             ),
           ),
 
-          // Bottom Left - Welcome Text + Button (Single Image)
+          // Bottom Left - Welcome Text + Button (Clickable Image)
           Positioned(
             bottom: 70,
             left: 20,
             right: 20,
-            child: Image.asset(
-              "assets/Group262.png", // Your provided image
-              width: MediaQuery.of(context).size.width * 0.9,
-              fit: BoxFit.contain,
+            child: GestureDetector(
+              onTap: () => _navigateToNextScreen(context),
+              child: Image.asset(
+                "assets/Group262.png", // Your provided image
+                width: MediaQuery.of(context).size.width * 0.9,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
         ],

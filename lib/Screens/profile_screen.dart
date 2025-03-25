@@ -1,6 +1,25 @@
+import 'package:cipherschool_expense_tracking_app/Screens/signup_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      // Sign out from Firebase
+      await FirebaseAuth.instance.signOut();
+
+      // Navigate to login screen and remove all previous routes
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => SignUpScreen()),
+            (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      // Handle any logout errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: ${e.toString()}')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +113,14 @@ class ProfilePage extends StatelessWidget {
               buildProfileOption(icon: Icons.wallet, text: "Account", color: Color(0xFF7E3FF2)),
               buildProfileOption(icon: Icons.settings, text: "Settings", color: Color(0xFF7E3FF2)),
               buildProfileOption(icon: Icons.upload, text: "Export Data", color: Color(0xFF7E3FF2)),
-                buildProfileOption(icon: Icons.logout, text: "Logout", color: Colors.red),
+              GestureDetector(
+                onTap: () => _signOut(context),
+                child: buildProfileOption(
+                    icon: Icons.logout,
+                    text: "Logout",
+                    color: Colors.red
+                ),
+              ),
             ],
           ),
         ),

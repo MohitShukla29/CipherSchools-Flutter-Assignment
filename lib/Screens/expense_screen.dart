@@ -1,3 +1,4 @@
+import 'package:cipherschool_expense_tracking_app/Screens/Home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,41 +13,51 @@ class ExpenseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildAppBar(context),
-            SizedBox(height: 20),
-            _buildTotalExpense(context),
-            SizedBox(height: 20),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
+      body: PopScope( // Use PopScope instead of WillPopScope
+        canPop: false, // Prevent default pop
+        onPopInvoked: (didPop) {
+          if (didPop) return;
+          // Safely navigate to home screen
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        },
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildAppBar(context),
+              SizedBox(height: 20),
+              _buildTotalExpense(context),
+              SizedBox(height: 20),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
+                  ),
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _buildTextField('Amount', _amountController),
+                      SizedBox(height: 15),
+                      _buildDropdown('Category', context),
+                      SizedBox(height: 15),
+                      _buildTextField('Description', null),
+                      SizedBox(height: 20),
+                      _buildAddExpenseButton(context),
+                      SizedBox(height: 20),
+                      Expanded(child: _buildExpenseList(context)),
+                    ],
                   ),
                 ),
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    _buildTextField('Amount', _amountController),
-                    SizedBox(height: 15),
-                    _buildDropdown('Category', context),
-                    SizedBox(height: 15),
-                    _buildTextField('Description', null),
-                    SizedBox(height: 20),
-                    _buildAddExpenseButton(context),
-                    SizedBox(height: 20),
-                    Expanded(child: _buildExpenseList(context)),
-                  ],
-                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -59,7 +70,12 @@ class ExpenseScreen extends StatelessWidget {
         children: [
           IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              // Use NavigationProvider to go back
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
+            },
           ),
           Spacer(),
           Text(
